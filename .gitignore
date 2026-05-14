@@ -1,0 +1,57 @@
+# ── Données brutes (volumineuses) ────────────────────────────
+09_data/raw/*
+!09_data/raw/.gitkeep
+!09_data/raw/README.md
+!09_data/raw/bluesky/
+!09_data/raw/bluesky/stream/
+!09_data/raw/bluesky/stream/.gitkeep
+!09_data/raw/kaggle/
+!09_data/raw/kaggle/news/
+!09_data/raw/kaggle/news/.gitkeep
+!09_data/raw/huggingface/
+!09_data/raw/huggingface/.gitkeep
+
+# ── Données traitées (régénérables) ──────────────────────────
+09_data/processed/*
+!09_data/processed/.gitkeep
+09_data/colab_exports/*
+!09_data/colab_exports/.gitkeep
+
+# ── Modèles binaires ─────────────────────────────────────────
+04_models/baseline/*.pkl
+04_models/baseline/tfidf_vectorizer/
+!04_models/baseline/.gitkeep
+04_models/distilbert/*
+!04_models/distilbert/.gitkeep
+
+# ── Environnement Python ─────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+fakenews/
+
+# ── Jupyter ──────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Next.js ──────────────────────────────────────────────────
+07_frontend/node_modules/
+07_frontend/.next/
+07_frontend/out/
+07_frontend/.env.local
+
+# ── Rapports générés ─────────────────────────────────────────
+09_data/reports/*.png
+09_data/reports/*.csv
+!09_data/reports/.gitkeep
+
+# ── Divers ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
