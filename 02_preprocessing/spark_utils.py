@@ -44,6 +44,12 @@ def get_spark_session(app_name: str = "FakeNewsAnalyzer", memory: str = "8g"):
             os.path.join(java17_path, "bin") + os.pathsep + os.environ.get("PATH", "")
         )
 
+    # Forcer Spark à utiliser le même Python que le process courant (venv actif).
+    # Sans ça, le JVM lance un worker Python depuis le PATH système → socket timeout.
+    import sys
+    os.environ["PYSPARK_PYTHON"] = sys.executable
+    os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
+
     from pyspark.sql import SparkSession
 
     spark = (

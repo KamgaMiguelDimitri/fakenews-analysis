@@ -58,19 +58,31 @@ class ModelService:
         self.is_ready = False
 
     def _try_load_distilbert(self, model_path: Path) -> bool:
-        """Charge DistilBERT si disponible."""
-        config_path = model_path / "config.json"
-        if not config_path.exists():
+        """Charge DistilBERT si disponible.
+        Cherche config.json dans model_path ET dans ses sous-dossiers directs
+        (ex: distilbert/distilbert_model/config.json).
+        """
+        # Chercher config.json : d'abord directement, puis un niveau en dessous
+        resolved = None
+        if (model_path / "config.json").exists():
+            resolved = model_path
+        else:
+            for sub in sorted(model_path.iterdir()) if model_path.exists() else []:
+                if sub.is_dir() and (sub / "config.json").exists():
+                    resolved = sub
+                    break
+
+        if resolved is None:
             return False
         try:
             from transformers import DistilBertForSequenceClassification, DistilBertTokenizerFast
-            self.model = DistilBertForSequenceClassification.from_pretrained(str(model_path))
-            self._tokenizer = DistilBertTokenizerFast.from_pretrained(str(model_path))
+            self.model = DistilBertForSequenceClassification.from_pretrained(str(resolved))
+            self._tokenizer = DistilBertTokenizerFast.from_pretrained(str(resolved))
             self.model.eval()
             self.model_name = "distilbert"
             self.model_type = "transformers"
             self.is_ready = True
-            log.info(f"✓ DistilBERT chargé depuis {model_path}")
+            log.info(f"✓ DistilBERT chargé depuis {resolved}")
             return True
         except Exception as e:
             log.warning(f"DistilBERT non chargeable : {e}")
@@ -84,16 +96,27 @@ class ModelService:
         return self._try_load_sklearn(patterns[0], patterns[0].stem)
 
     def _try_load_sklearn(self, model_path: Path, name: str) -> bool:
-        """Charge un modèle sklearn + pipeline TF-IDF."""
+        """Charge un modèle sklearn + vectoriseur TF-IDF (format sklearn .pkl)."""
         if not model_path.exists():
             return False
         try:
             import joblib
             self.model = joblib.load(str(model_path))
-            tfidf_path = MODELS_DIR / "baseline" / "tfidf_vectorizer"
-            if tfidf_path.exists():
-                from .tfidf_inference import load_tfidf_pipeline
-                self._tfidf_vectorizer = load_tfidf_pipeline(str(tfidf_path))
+
+            # Chercher le vectoriseur TF-IDF sklearn (produit par Databricks)
+            tfidf_pkl = MODELS_DIR / "baseline" / "tfidf_vectorizer.pkl"
+            if tfidf_pkl.exists():
+                self._tfidf_vectorizer = joblib.load(str(tfidf_pkl))
+                log.info(f"✓ TF-IDF vectorizer chargé : {tfidf_pkl}")
+            else:
+                log.warning(
+                    "tfidf_vectorizer.pkl introuvable dans 04_models/baseline/. "
+                    "Télécharger depuis Databricks : "
+                    "databricks fs cp dbfs:/FileStore/fakenews/models/baseline/tfidf_vectorizer.pkl "
+                    "04_models/baseline/tfidf_vectorizer.pkl"
+                )
+                self._tfidf_vectorizer = None
+
             self.model_name = name
             self.model_type = "sklearn"
             self.is_ready = True

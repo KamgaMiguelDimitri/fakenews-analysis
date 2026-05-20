@@ -1,1 +1,27 @@
-{}
+{
+  "baseline_logreg": {
+    "accuracy": 0.9521,
+    "f1_score": 0.9522,
+    "auc_roc": 0.9907,
+    "trained_at": "2026-05-18T17:51:15",
+    "model_path": "/Volumes/workspace/default/fakenews/models/baseline/tfidf_logreg.pkl"
+  },
+  "XGBoost": {
+    "accuracy": 0.9545,
+    "f1_score": 0.9545,
+    "auc_roc": 0.9912,
+    "trained_at": "2026-05-18T18:03:43"
+  },
+  "LogReg_NLP": {
+    "accuracy": 0.9517,
+    "f1_score": 0.9517,
+    "auc_roc": 0.9907,
+    "trained_at": "2026-05-18T18:03:43"
+  },
+  "RandomForest": {
+    "accuracy": 0.9164,
+    "f1_score": 0.9163,
+    "auc_roc": 0.9779,
+    "trained_at": "2026-05-18T18:03:43"
+  }
+}
